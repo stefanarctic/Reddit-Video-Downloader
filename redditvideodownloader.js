@@ -38,24 +38,33 @@ function handleData(data) {
     downloadUrls();
 }
 
-function cb(message) {
-    console.log("Logged message: " + message);
+function handleVideoData(data, url) {
+    fs.writeFile(url.title, data, err => {
+        if(err) throw err;
+        console.log(`Created file ${url.title}`);
+    });
 }
 
+
 function downloadUrls() {
-    for(let i = 0; i < urls.length; i++) {
-        const url = urls[i];
-        const file = fs.createWriteStream(url.title);
-        const request = https.get(url.url, function(response, erorr) {
-        if(erorr) throw erorr;
-        response.pipe(file);
-        file.on('finish', function() {
-            file.close(cb);  // close() is async, call cb after close completes.
-        });
-        }).on('error', function(err) { // Handle errors
-            fs.unlink(url.url); // Delete the file async. (But we don't check the result)
-            if (cb) cb(err.message);
-        });
+    try {
+        for(let i = 0; i < urls.length; i++) {
+            const url = urls[i];
+            fetch(url.url).then(res => res.text()).then(data => handleVideoData(data, url));
+            // const file = fs.createWriteStream(url.title);
+            // const request = https.get(url.url, function(response, error) {
+            // if(error) throw error;
+            // response.pipe(file);
+            // file.on('finish', function() {
+            //     file.close(cb);  // close() is async, call cb after close completes.
+            // });
+            // }).on('error', function(err) { // Handle errors
+            //     fs.unlink(url.url); // Delete the file async. (But we don't check the result)
+            //     if (cb) cb(err.message);
+            // });
+        }
+    } catch(e) {
+        console.error(e);
     }
 }
 
