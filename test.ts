@@ -1,0 +1,2 @@
+
+const yes: string = "sdsa";

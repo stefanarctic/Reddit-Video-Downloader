@@ -1,11 +1,12 @@
 
 // Imports
-import fs from 'fs';
+import fs, { write } from 'fs';
 import fetch from 'node-fetch';
 
 // Variables
 const ending = "/DASH_420.mp4";
 const limit = 3;
+const downloadDelay = 1000; // in miliseconds
 
 const search_url = `https://www.reddit.com/r/Unity2D/top.json?limit=${limit}`;
 
@@ -15,27 +16,78 @@ let urls = [];
 
 // URL class to be able to store two variables(url, title) in an object
 class URL {
+    url = null;
+    title = null;
     constructor(url, title) {
         this.url = url;
         this.title = title;
     }
 }
 
+function createURL(url) {
+    return new URL(url.url, url.title);
+}
+
 // Handles video data from downloadUrls function, creating a file with the name of the post and with it's video's content
 function handleVideoData(data, url) {
-    fs.appendFile(url.title, data, err => {
-        if(err) throw err;
+    // fs.appendFile(url.title, data, err => {
+    //     if(err) throw err;
+    //     console.log(`Created file ${url.title}`);
+    // });
+    // const writeStream = fs.createWriteStream(url.title);
+    // writeStream.write(data, err => {
+    //     if(err) throw err;
+    //     console.log(`Created file ${url.title}`);
+    // });
+    // writeStream.close();
+    fs.writeFile(url.title, data, "utf8", err => {
+        if(err) console.error(err);
         console.log(`Created file ${url.title}`);
-    });
+    })
 }
 
 // Loops trough all the urls in the urls array, fetches the content of the video and then call handleVideoData
-function downloadUrls() {
+// << Legacy >>
+function downloadAllUrlsLegacy() {
     try {
         for(let i = 0; i < urls.length; i++) {
             const url = urls[i];
             fetch(url.url).then(res => res.text()).then(data => handleVideoData(data, url));
         }
+    } catch(e) {
+        console.error(e);
+    }
+}
+
+let index = 0;
+
+function createVideo() {
+    const url = createURL(urls[index]);
+    fetch(url.url).then(res => res.text()).then(data => handleVideoData(data, url));
+    index++;
+    setTimeout(createVideo, downloadDelay);
+}
+
+function downloadUrls() {
+    // try {
+    //     do {
+    //         downloadUrl(urls[++index]);
+    //     } while(index++ < urls.length);
+    // } catch(e) {
+    //     console.error(e);
+    // }
+    try {
+        console.log("Beggining download...");
+        createVideo();
+        // console.log(urls[1]);
+        // urls.map(url => {
+        //     fetch(url.url).then(res => res.text()).then(data => handleVideoData(data, url.url));
+        //     console.log(url);
+        // });
+        // urls.map(url => {
+        //     fetch(url.url).then(res => res.text()).then(data => handleVideoData(data, url));    
+        //     console.log(url);
+        // });
     } catch(e) {
         console.error(e);
     }

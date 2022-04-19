@@ -1,0 +1,25 @@
+{
+  "name": "reddit-video-downloader",
+  "version": "1.0.0",
+  "description": "A script that downloads the latest reddit videos from the Unity2D subreddit",
+  "main": "redditvideodownloader.mjs",
+  "type": "module",
+  "scripts": {
+    "test": "node redditvideodownloader.mjs",
+    "debug": "node --trace-warnings redditvideodownloader.mjs"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/stefanarctic/Reddit-Video-Downloader.git"
+  },
+  "author": "Stefanarctic",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/stefanarctic/Reddit-Video-Downloader/issues"
+  },
+  "homepage": "https://github.com/stefanarctic/Reddit-Video-Downloader#readme",
+  "dependencies": {
+    "@types/node": "^17.0.25",
+    "node-fetch": "^3.2.3"
+  }
+}
